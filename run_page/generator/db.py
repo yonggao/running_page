@@ -117,7 +117,7 @@ def update_or_create_activity(session, run_activity):
                 moving_time=run_activity.moving_time,
                 elapsed_time=run_activity.elapsed_time,
                 type=run_activity.type,
-                subtype=run_activity.subtype,
+                subtype=getattr(run_activity, "subtype", None),  # Use getattr with default
                 start_date=run_activity.start_date,
                 start_date_local=run_activity.start_date_local,
                 location_country=location_country,
@@ -135,7 +135,7 @@ def update_or_create_activity(session, run_activity):
             activity.moving_time = run_activity.moving_time
             activity.elapsed_time = run_activity.elapsed_time
             activity.type = run_activity.type
-            activity.subtype = run_activity.subtype
+            activity.subtype = getattr(run_activity, "subtype", None)  # Use getattr with default
             activity.average_heartrate = run_activity.average_heartrate
             activity.average_speed = float(run_activity.average_speed)
             activity.summary_polyline = (
