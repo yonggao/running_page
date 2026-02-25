@@ -424,7 +424,67 @@ const sortDateFunc = (a: Activity, b: Activity) => {
 };
 const sortDateFuncReverse = (a: Activity, b: Activity) => sortDateFunc(b, a);
 
+// Build a mapbox-gl custom style object for AMap (高德地图) raster tiles.
+// AMap tiles use GCJ02 coordinate system, same as Chinese GPS data,
+// so tracks align visually without coordinate transformation.
+const buildAmapStyle = (styleName: string) => {
+  // Tile URL templates — rotate across 4 subdomains for load balancing
+  const roadTiles = ['01', '02', '03', '04'].map(
+    (n) =>
+      `https://webrd${n}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}`
+  );
+  const satelliteTiles = ['01', '02', '03', '04'].map(
+    (n) =>
+      `https://webst${n}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}`
+  );
+  const labelTiles = ['01', '02', '03', '04'].map(
+    (n) =>
+      `https://webst${n}.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}`
+  );
+
+  // Raster paint for dark mode (dims + desaturates the standard map)
+  const darkPaint = {
+    'raster-brightness-max': 0.35,
+    'raster-saturation': -0.25,
+    'raster-contrast': 0.15,
+  };
+
+  if (styleName === 'satellite') {
+    return {
+      version: 8,
+      sources: {
+        'amap-satellite': { type: 'raster', tiles: satelliteTiles, tileSize: 256, attribution: '© 高德地图' },
+        'amap-labels': { type: 'raster', tiles: labelTiles, tileSize: 256 },
+      },
+      layers: [
+        { id: 'amap-satellite-layer', type: 'raster', source: 'amap-satellite', minzoom: 0, maxzoom: 22 },
+        { id: 'amap-label-layer', type: 'raster', source: 'amap-labels', minzoom: 0, maxzoom: 22 },
+      ],
+    };
+  }
+
+  return {
+    version: 8,
+    sources: {
+      'amap-tiles': { type: 'raster', tiles: roadTiles, tileSize: 256, attribution: '© 高德地图' },
+    },
+    layers: [
+      {
+        id: 'amap-layer',
+        type: 'raster',
+        source: 'amap-tiles',
+        minzoom: 0,
+        maxzoom: 22,
+        paint: styleName === 'dark' ? darkPaint : {},
+      },
+    ],
+  };
+};
+
 const getMapStyle = (vendor: string, styleName: string, token: string) => {
+  if (vendor === 'amap') {
+    return buildAmapStyle(styleName);
+  }
   const style = (MAP_TILE_STYLES as any)[vendor][styleName];
   if (!style) {
     return MAP_TILE_STYLES.default;

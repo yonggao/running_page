@@ -1,9 +1,7 @@
 // const
-const MAPBOX_TOKEN =
-  // For security reasons, please avoid using the default public token provided by Mapbox as much as possible.
-  // Instead, manually add a new token and apply URL restrictions.
-  // (please refer to https://github.com/yihong0618/running_page/issues/643#issuecomment-2042668580)
-  'pk.eyJ1IjoieWlob25nMDYxOCIsImEiOiJja2J3M28xbG4wYzl0MzJxZm0ya2Fua2p2In0.PNKfkeQwYuyGOTT_x9BJ4Q';
+// When using amap as MAP_TILE_VENDOR, this Mapbox token is not used for tile fetching.
+// If you ever switch back to Mapbox, set VITE_MAPBOX_TOKEN in environment variables.
+const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN as string) || '';
 const MUNICIPALITY_CITIES_ARR = [
   '北京市',
   '上海市',
@@ -169,19 +167,32 @@ export const HIKING_COLOR = 'rgb(151,51,255)';
 export const WALKING_COLOR = HIKING_COLOR;
 export const SWIMMING_COLOR = 'rgb(255,51,51)';
 
-// map tiles vendor, maptiler or mapbox or stadiamaps
-// if you want to use maptiler, set the access token in MAP_TILE_ACCESS_TOKEN
-export const MAP_TILE_VENDOR = 'mapbox';
+// map tiles vendor, maptiler or mapbox or stadiamaps or amap
+// switched to amap (高德地图) — no token validation, works reliably in China
+export const MAP_TILE_VENDOR = 'amap';
 
 // map tiles style name, see MAP_TILE_STYLES for more details
-export const MAP_TILE_STYLE = 'dark-v10';
+// for amap vendor: 'dark' (darkened standard map) or 'standard' (light) or 'satellite' (imagery)
+export const MAP_TILE_STYLE = 'dark';
 
-// access token. you can apply a new one, it's free.
-// maptiler: Gt5R0jT8tuIYxW6sNrAg | sign up at https://cloud.maptiler.com/auth/widget
-// stadiamaps: 8a769c5a-9125-4936-bdcf-a6b90cb5d0a4 |sign up at https://client.stadiamaps.com/signup/
-export const MAP_TILE_ACCESS_TOKEN = 'Gt5R0jT8tuIYxW6sNrAg';
+// AMap (高德地图) API Key — read from env var, falls back to hardcoded for local dev
+// Vercel env var: VITE_AMAP_KEY
+export const MAP_TILE_ACCESS_TOKEN =
+  (import.meta.env.VITE_AMAP_KEY as string) || '577048de3ed8b0b102ffe3eca8bb402a';
+
+// AMap security key — for AMap JS API v2 compliance
+// Vercel env var: VITE_AMAP_SECURITY_KEY
+export const AMAP_SECURITY_KEY =
+  (import.meta.env.VITE_AMAP_SECURITY_KEY as string) ||
+  'bc08db8912081527262d1964907b84f4';
 
 export const MAP_TILE_STYLES = {
+  // AMap (高德地图) raster tiles — style is a placeholder; actual style built in getMapStyle()
+  amap: {
+    dark: 'amap-dark',
+    standard: 'amap-standard',
+    satellite: 'amap-satellite',
+  },
   maptiler: {
     'dataviz-dark':
       'https://api.maptiler.com/maps/dataviz-dark/style.json?key=',

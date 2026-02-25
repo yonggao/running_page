@@ -1,3 +1,7 @@
+# Local env files (contain API keys — never commit)
+.env.local
+.env.*.local
+
 # Project dependencies
 .yarn
 .cache
