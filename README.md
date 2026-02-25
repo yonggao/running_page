@@ -3,7 +3,7 @@
 1. clone or Fork before vercel 404 need to pull the latest code
 2. python in README means python3 python
 3. use v2.0 need change vercel setting from gatsby to vite
-4. 2023.09.26 garmin need secret_string(and in Actions) get
+4. 2023.09.26 garmin need secret_string(and in Actions) get 
 
    ```bash
      python run_page/get_garmin_secret.py ${email} ${password}
@@ -12,7 +12,6 @@
    ```
 
 5. 2024.09.29: Added `Elevation Gain` field, If you forked the project before this update, please run the following command:
-
    - To resolve errors: `sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: activities.elevation_gain`
    - If you don't have a local environment, set `RUN_TYPE` to `db_updater` in the `.github/workflows/run_data_sync.yml` file once then change back.
 
@@ -23,6 +22,7 @@
    - For old data: To include `Elevation Gain` for past activities, perform a full reimport.
    - To show the 'Elevation Gain' column, modify `SHOW_ELEVATION_GAIN` in `src/utils/const.ts`
    - note: `Elevation Gain` may be inaccurate. You can use Strava's "Correct Elevation" or Garmin's "Elev Corrections" feature for more precise data.
+6. This project now uses MapCN (free) by default. If you choose to use Mapbox, please get your own token.  Do not use the project maintainer's token - check this [issue](https://github.com/yihong0618/running_page/issues/643) and [issue #1055](https://github.com/yihong0618/running_page/issues/1055)
 
 <p align="center">
   <img width="150" src="https://raw.githubusercontent.com/shaonianche/gallery/master/running_page/running_page_logo.png" />
@@ -125,7 +125,13 @@ English | [简体中文](https://github.com/yihong0618/running_page/blob/master/
 | [Daniel](https://danielyu316.github.io/running_page) | <https://danielyu316.github.io/running_page/>  | Codoon      |
 | [arthurfsy2](https://github.com/arthurfsy2)          | <https://fsy.4a1801.life>                      | Garmin      |
 | [JMGutiH](https://github.com/JMGutiH)                | <https://jmgutih.github.io/workouts_page/>     | Strava      |
-
+| [Bolyn](https://run.wbolyn.com)                      | <https://run.wbolyn.com>                       | Coros       |
+| [LeiChen](https://github.com/xthirty77)              | <https://xthirty77.github.io/running_page/>    | Coros       |
+| [itrunner](https://itrunner.cn)                      | <https://itrunner.cn>                          | Garmin      |
+| [maslke](https://github.com/maslke)                  | <https://maslke.space/running_page/>           | Garmin-cn   |
+| [Niewei Yang](https://github.com/Niewei-Yang)        | <https://neewii-worksout.vercel.app/>          | Strava      |
+| [RUN.LOG](https://github.com/bzzd2001)            | <https://run.731558.xyz:6881/>                 | Strava      |
+| [StoneRicky](https://github.com/StoneRicky)       | <https://stonericky.github.io/running_page/>   | COROS       |
 </details>
 
 ## How it works
@@ -139,6 +145,7 @@ English | [简体中文](https://github.com/yihong0618/running_page/blob/master/
 3. React Hooks
 4. Mapbox for map display
 5. Supports most sports apps such as nike strava...
+6. Support for metric and imperial units
 
 > automatically backup gpx data for easy backup and uploading to other software.
 >
@@ -161,7 +168,11 @@ English | [简体中文](https://github.com/yihong0618/running_page/blob/master/
 - **[Gpx_to_Strava(upload all gpx data to strava)](#gpx_to_strava)**
 - **[Garmin_to_Strava(Using Garmin Run, Strava backup data)](#garmin_to_strava)**
 - **[Strava_to_Garmin(Using Strava Run, Garmin backup data)](#strava_to_garmin)**
-- **[Coros](#coros)**
+- **[COROS](#coros)**
+- **[iGPSPORT](#igpsport)**
+- **[Joyrun](#joyrun)**
+- **[Komoot](#komoot)**
+- **[Onelap](#onelap)**
 
 ## Download
 
@@ -211,6 +222,10 @@ Open your browser and visit localhost:80
 
 ```
 
+### Imperial Units
+* add `--build-arg VITE_USE_IMPERIAL=true` to `docker build ...`
+* add `--units imperial` flag to each `python3 run_page/gen_svg.py ...` command in the [Dockerfile](https://github.com/yihong0618/running_page/blob/master/Dockerfile)
+
 ## Local sync data
 
 ### Modifying Mapbox token
@@ -223,30 +238,57 @@ const MAPBOX_TOKEN =
   'pk.eyJ1IjoieWlob25nMDYxOCIsImEiOiJja2J3M28xbG4wYzl0MzJxZm0ya2Fua2p2In0.PNKfkeQwYuyGOTT_x9BJ4Q';
 ```
 
-Here's a polished English translation while maintaining the original Markdown format and improving clarity:
-
----
-
 ## Change Default Map Tile Style
 
 > In addition to using the default map tile style, you can customize the map display by modifying the following configurations in `src/utils/const.ts`:
 
 ```typescript
-const MAP_TILE_VENDOR = 'maptiler';
-const MAP_TILE_STYLE = 'winter-dark';
-const MAP_TILE_ACCESS_TOKEN = 'your_access_token';
+const MAP_TILE_VENDOR = 'mapcn'; // Default (free!)
+const MAP_TILE_STYLE = 'osm-bright';
+const MAP_TILE_ACCESS_TOKEN = ''; // Not needed for MapCN
 ```
 
 Currently supported `MAP_TILE_VENDOR` options include:
 
-- **"mapbox"** - Mapbox map services
-- **"maptiler"** - MapTiler map services
-- **"stadiamaps"** - Stadia Maps services
+- **"mapcn"** - MapCN map services (FREE, no token required) ⭐ DEFAULT & RECOMMENDED
+- **"mapbox"** - Mapbox map services (requires token, has costs)
+- **"maptiler"** - MapTiler map services (free tier available)
+- **"stadiamaps"** - Stadia Maps services (free tier available)
+
+Using MapCN (Default)
+MapCN is a free map tile provider and is now the default. No configuration needed!
+
+Available MapCN styles:
+
+- **osm-bright** - Light OpenStreetMap style (default)
+- **osm-liberty** - Alternative light style
+- **dark-matter** - Dark theme style
+
+**No access token required! ** 🎉
+
+## Attribution
+
+When using MapCN (Carto Basemaps), please ensure you comply with their attribution requirements:
+
+- Map tiles: © [CARTO](https://carto.com/)
+- Map data: © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors
+
+The project template already includes appropriate attribution in the map display.
+
+## Using Other Providers
+If you prefer Mapbox, MapTiler, or Stadia Maps, you can change the vendor:
+
+```typescript
+const MAP_TILE_VENDOR = 'mapbox'; // or 'maptiler' or 'stadiamaps'
+const MAP_TILE_STYLE = 'dark-v10'; // style for chosen vendor
+const MAP_TILE_ACCESS_TOKEN = 'your_access_token_here';
+```
 
 Each `MAP_TILE_VENDOR` provides multiple `MAP_TILE_STYLE` options. Ensure the style matches your selected vendor. For available `MAP_TILE_STYLE` names, refer to the definitions in `src/utils/const.ts`.
 
-When using **"maptiler"** or **"stadiamaps"**, you must configure an `ACCESS_TOKEN`. The default token may cause quota limit issues if not replaced.
+When using **"mapbox"**, **"maptiler"** or **"stadiamaps"**, you must configure an `ACCESS_TOKEN`. The default token may cause quota limit issues if not replaced.
 
+- **Mapbox**: Register at [https://www.mapbox.com/](https://www.mapbox.com/) (Has usage costs)
 - **MapTiler**: Register at [https://cloud.maptiler.com/auth/widget](https://cloud.maptiler.com/auth/widget) (Free tier available)
 - **Stadia Maps**: Sign up at [https://client.stadiamaps.com/signup/](https://client.stadiamaps.com/signup/) (Free tier available)
 
@@ -645,7 +687,6 @@ python run_page/nike_sync.py eyJhbGciThiMTItNGIw******
    ```
 
    References：
-
    - <https://developers.strava.com/docs/getting-started>
    - <https://github.com/barrald/strava-uploader>
    - <https://github.com/strava/go.strava>
@@ -811,10 +852,14 @@ python run_page/nike_to_strava_sync.py eyJhbGciThiMTItNGIw******  xxx xxx xxx
 
 </details>
 
-### Coros
+### COROS
 
 <details>
-<summary>Get your Coros data</summary>
+<summary>Get your COROS data</summary>
+
+<br>
+
+- If you only want to sync `type running` add args --only-run
 
 #### Enter the following command in the terminal
 
@@ -832,6 +877,73 @@ python run_page/coros_sync.py 'your coros account' 'your coros password'
 
 </details>
 
+### iGPSPORT
+
+<details>
+<summary>Get your iGPSPORT data</summary>
+
+#### Enter the following command in the terminal
+
+```bash
+python3 run_page/igpsport_sync.py 'your igpsport phone' 'password' --with-gpx
+```
+
+You can replace `with-gpx` with `with-fit` to acquire data in fit format.
+
+</details>
+
+### Joyrun
+
+<details>
+<summary>Get your Joyrun data</summary>
+
+#### Enter the following command in the terminal
+
+```bash
+python3 run_page/joyrun_sync.py 'your joyrun phone' 'verication code' --with-gpx
+```
+
+You can replace `with-gpx` with `with-tcx` to acquire data in tcx format.
+
+</details>
+
+### Komoot
+
+<details>
+<summary>Get your Komoot data</summary>
+
+#### Enter the following command in the terminal
+
+```bash
+python3 run_page/komoot_sync.py 'your komoot email' 'password' --with-gpx
+```
+
+| Parameter | Description |
+| --- | --- |
+| `mail` | Login using specified email address |
+| `password` | Use provided password and skip interactive prompt |
+| `-n`, `--anonymous` | Skip authentication, no interactive prompt (valid only with `-d`) |
+| `--with-gpx` | Download all tours as GPX |
+| `-r`, `--remove-deleted` | Remove GPX files (from `--output` dir) without corresponding tour in Komoot (deleted and previous versions) |
+| `--start-date=YYYY-MM-DD` | Filter tours on or after specified date |
+| `--end-date=YYYY-MM-DD` | Filter tours on or before specified date |
+| `-e`, `--no-poi` | Do not include highlights as POIs |
+
+</details>
+
+### Onelap
+
+<details>
+<summary>Get your Onelap data</summary>
+
+#### Enter the following command in the terminal
+
+```bash
+python3 run_page/onelap_sync.py 'your onelap phone' 'password' --with-fit
+```
+
+</details>
+
 ### Total Data Analysis
 
 <details>
@@ -842,14 +954,76 @@ python run_page/coros_sync.py 'your coros account' 'your coros password'
 - Display of results:[Click to view](https://raw.githubusercontent.com/yihong0618/running_page/master/assets/github.svg)、[Click to view](https://raw.githubusercontent.com/yihong0618/running_page/28fa801e4e30f30af5ae3dc906bf085daa137936/assets/grid.svg)
 
 ```bash
+
+python run_page/gen_svg.py -h
+
+usage: gen_svg.py [-h] [--gpx-dir DIR] [--output FILE] [--language LANGUAGE] [--year YEAR] [--title TITLE] [--athlete NAME] [--special FILE] [--type TYPE]
+                  [--background-color COLOR] [--track-color COLOR] [--track-color2 COLOR] [--text-color COLOR] [--special-color COLOR] [--special-color2 COLOR] [--units UNITS]
+                  [--verbose] [--logfile FILE] [--special-distance DISTANCE] [--special-distance2 DISTANCE] [--min-distance DISTANCE] [--use-localtime] [--from-db]
+                  [--github-style GITHUB_STYLE] [--circular-rings] [--circular-ring-color COLOR] [--empty-data-color COLOR] [--birth YYYY-MM]
+
+options:
+  -h, --help            show this help message and exit
+  --gpx-dir DIR         Directory containing GPX files (default: current directory).
+  --output FILE         Name of generated SVG image file (default: "poster.svg").
+  --language LANGUAGE   Language (default: english).
+  --year YEAR           Filter tracks by year; "NUM", "NUM-NUM", "all" (default: all years)
+  --title TITLE         Title to display.
+  --athlete NAME        Athlete name to display (default: "John Doe").
+  --special FILE        Mark track file from the GPX directory as special; use multiple times to mark multiple tracks.
+  --type TYPE           Type of poster to create (default: "grid", available: "grid", "circular", "github", "monthoflife").
+  --background-color COLOR
+                        Background color of poster (default: "#222222").
+  --track-color COLOR   Color of tracks (default: "#4DD2FF").
+  --track-color2 COLOR  Secondary color of tracks (default: none).
+  --text-color COLOR    Color of text (default: "#FFFFFF").
+  --special-color COLOR
+                        Special track color (default: "#FFFF00").
+  --special-color2 COLOR
+                        Secondary color of special tracks (default: none).
+  --units UNITS         Distance units; "metric", "imperial" (default: "metric").
+  --verbose             Verbose logging.
+  --logfile FILE
+  --special-distance DISTANCE
+                        Special Distance1 by km and color with the special_color
+  --special-distance2 DISTANCE
+                        Special Distance2 by km and corlor with the special_color2
+  --min-distance DISTANCE
+                        min distance by km for track filter
+  --use-localtime       Use utc time or local time
+  --from-db             activities db file
+  --github-style GITHUB_STYLE
+                        github svg style; "align-firstday", "align-monday" (default: "align-firstday").
+  --birth YYYY-MM       Birth date in format YYYY-MM
+
+Circular Type Options:
+  --circular-rings      Draw distance rings.
+  --circular-ring-color COLOR
+                        Color of distance rings.
+
+Github Type Options:
+  --empty-data-color COLOR
+                        Color for empty dates in github style poster (default: #444444)
+
+```
+
+Generate github style svg show
+
+```bash
 python run_page/gen_svg.py --from-db --title "${{ env.TITLE }}" --type github --athlete "${{ env.ATHLETE }}" --special-distance 10 --special-distance2 20 --special-color yellow --special-color2 red --output assets/github.svg --use-localtime --min-distance 0.5
 ```
+
+If you want to change the display color of empty data(only github style), please use `--empty-data-color`:
+
+```bash
+python run_page/gen_svg.py --from-db --title "${{ env.TITLE }}" --type github --athlete "${{ env.ATHLETE }}" --special-distance 10 --special-distance2 20 --special-color yellow --special-color2 red --output assets/github.svg --use-localtime --min-distance 0.5 ----empty-data-color grey
+```
+
+Generate grid style svg show
 
 ```bash
 python run_page/gen_svg.py --from-db --title "${{ env.TITLE_GRID }}" --type grid --athlete "${{ env.ATHLETE }}"  --output assets/grid.svg --min-distance 10.0 --special-color yellow --special-color2 red --special-distance 20 --special-distance2 40 --use-localtime
 ```
-
-Generate year circular svg show
 
 ```bash
 python run_page/gen_svg.py --from-db --type circular --use-localtime
@@ -933,19 +1107,16 @@ For more display effects, see:
 1. Go to repository's `Settings -> GitHub Pages -> Source`, choose `GitHub Actions`
 
 2. Go to the repository's `Actions -> Workflows -> All Workflows`, choose `Run Data Sync` from the left panel, and click `Run workflow`.
-
    - The `Run Data Sync` will update data and then trigger the `Publish GitHub Pages` workflow
    - Make sure the workflow runs without errors.
 
 3. Open your website to check on the results
-
    - note if the website doesn't reflect the latest data, please refresh it by `F5`.
    - Some browsers (e.g. Chrome) won't refresh if there is a cache, you then need to use `Ctrl+F5` (Windows) or `Shift+Cmd+r` (Mac) to force clearing the cache and reload the page.
 
 4. make sure you have write permissions in Workflow permissions settings.
 
 5. If you want to deploy your running_page to xxx.github.io instead of xxx.github.io/running_page or redirect your GitHub Pages to a custom domain, you need to do three things:
-
    - Rename your forked running_page repository to `xxx.github.io`, where xxx is your GitHub username
    - Modify the Build module in gh-pages.yml, remove `${{ github.event.repository.name }}` and change to `run: PATH_PREFIX=/ pnpm build`
    - In `src/static/site-metadata.ts`, set siteUrl: '' or your custom domain URL
@@ -1003,7 +1174,6 @@ Take the keep app as an example. Close the app after running, and then automatic
    <center><img src="https://cdn.jujimeizuo.cn/blog/2023/10/get-action-id.jpg" alt="get-action-id"></center>
 
 2. Binding shortcut instruction
-
    1. Get it via icloud [running-page-shortcuts-template](https://www.icloud.com/shortcuts/4a5807a98b9a4e359815ff179c62bacb)
 
    2. Modify the dictionary parameters in the following figure
@@ -1055,7 +1225,8 @@ supported manufacturer:
 
 # Contribution
 
-- Any Issues PR welcome.
+- Any Issues welcome.
+- PR need to disscuss first(For LLM year 2026)
 - You can PR share your Running page in README I will merge it.
 
 Before submitting PR:

@@ -25,13 +25,6 @@ logger = logging.getLogger("nike_sync")
 
 BASE_URL = "https://api.nike.com/plus/v3"
 TOKEN_REFRESH_URL = "https://api.nike.com/idn/shim/oauth/2.0/token"
-NIKE_CLIENT_ID = "VmhBZWFmRUdKNkc4ZTlEeFJVejhpRTUwQ1o5TWlKTUc="
-NIKE_UX_ID = "Y29tLm5pa2Uuc3BvcnQucnVubmluZy5pb3MuNS4xNQ=="
-NIKE_HEADERS = {
-    "Host": "api.nike.com",
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-}
 
 
 class Nike:
@@ -39,13 +32,6 @@ class Nike:
         self.client = httpx.Client()
 
         self.client.headers.update({"Authorization": f"Bearer {access_token}"})
-
-    def get_activities_since_timestamp(self, timestamp):
-        # return self.request("activities/before_id/v3/*?limit=30&types=run%2Cjogging&include_deleted=false", timestamp)
-        return self.request(
-            "activities/before_id/v3/*?limit=30&types=run%2Cjogging&include_deleted=false",
-            timestamp,
-        )
 
     def get_activities_before_id(self, activity_id):
         if not activity_id:
@@ -64,8 +50,8 @@ class Nike:
     def get_activity(self, activity_id):
         try:
             return self.request(f"activity/{activity_id}?metrics=ALL")
-        except Exception:
-            print("retry")
+        except Exception as e:
+            logger.warning(f"Error getting activity {activity_id}: {e}, retrying...")
             time.sleep(3)
             return self.request(f"activity/{activity_id}?metrics=ALL")
 
@@ -380,7 +366,7 @@ def make_new_gpxs(files):
                 json_data = json.loads(f.read())
             except Exception as e:
                 print(f"Error reading JSON file {file}: {e}")
-                return
+                continue
         # ALL save name using utc if you want local please offset
         activity_name = str(json_data["end_epoch_ms"])
         parsed_data = parse_activity_data(json_data)
