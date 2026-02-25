@@ -70,7 +70,7 @@ const RunMap = ({
   const mapRef = useRef<MapRef>(null);
   const [lights, setLights] = useState(PRIVACY_MODE ? false : LIGHTS_ON);
   // layers that should remain visible when lights are off
-  const keepWhenLightsOff = ['runs2', 'animated-run'];
+  const keepWhenLightsOff = ['runs2', 'animated-run', 'province', 'countries'];
   const [mapGeoData, setMapGeoData] =
     useState<FeatureCollection<RPGeometry> | null>(null);
   const [isLoadingMapData, setIsLoadingMapData] = useState(false);
@@ -469,11 +469,10 @@ const RunMap = ({
           type="line"
           paint={{
             'line-color': ['get', 'color'],
-            'line-width': isBigMap && lights ? 1 : 2,
+            'line-width': isBigMap ? 1.5 : 2,
             'line-dasharray': dash,
             'line-opacity':
               isSingleRun || isBigMap || !lights ? 1 : LINE_OPACITY,
-            'line-blur': 1,
           }}
           layout={{
             'line-join': 'round',

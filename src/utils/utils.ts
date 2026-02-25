@@ -18,6 +18,7 @@ import {
   RUN_TRAIL_COLOR,
   MAP_TILE_STYLES,
   MAP_TILE_STYLE_DARK,
+  MAP_TILE_VENDOR,
 } from './const';
 import {
   FeatureCollection,
@@ -219,11 +220,26 @@ const pathForRun = (run: Activity): Coordinate[] => {
       return [];
     }
     const c = mapboxPolyline.decode(run.summary_polyline);
-    // reverse lat long for mapbox
+    // reverse lat long for mapbox/maplibre
     c.forEach((arr) => {
-      [arr[0], arr[1]] = !NEED_FIX_MAP
-        ? [arr[1], arr[0]]
-        : gcoord.transform([arr[1], arr[0]], gcoord.GCJ02, gcoord.WGS84);
+      if (MAP_TILE_VENDOR === 'amap') {
+        // AMap tiles use GCJ-02, Strava data is WGS-84 → convert to GCJ-02
+        [arr[0], arr[1]] = gcoord.transform(
+          [arr[1], arr[0]],
+          gcoord.WGS84,
+          gcoord.GCJ02
+        );
+      } else if (NEED_FIX_MAP) {
+        // Other tile vendors use WGS-84, Chinese GPS data is GCJ-02 → convert to WGS-84
+        [arr[0], arr[1]] = gcoord.transform(
+          [arr[1], arr[0]],
+          gcoord.GCJ02,
+          gcoord.WGS84
+        );
+      } else {
+        // No transformation needed, just swap lat/lon to lon/lat
+        [arr[0], arr[1]] = [arr[1], arr[0]];
+      }
     });
     // try to use location city coordinate instead , if runpath is incomplete
     if (c.length === 2 && String(c[0]) === String(c[1])) {

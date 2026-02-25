@@ -33,7 +33,7 @@ const GOOGLE_ANALYTICS_TRACKING_ID = '';
 // styling: set to `true` if you want dash-line route
 const USE_DASH_LINE = true;
 // styling: route line opacity: [0, 1]
-const LINE_OPACITY = 0.4;
+const LINE_OPACITY = 0.6;
 // styling: map height - responsive design
 // Use smaller height on mobile devices for better user experience
 const MAP_HEIGHT = window.innerWidth <= 768 ? 250 : 600;
@@ -182,7 +182,7 @@ export const COUNTRY_FILL_COLOR = dark_vanilla;
 
 // Static color constants
 export const RUN_COLOR_LIGHT = '#47b8e0';
-export const RUN_COLOR_DARK = MAIN_COLOR;
+export const RUN_COLOR_DARK = '#ff5500';
 
 // Single run animation colors
 export const SINGLE_RUN_COLOR_LIGHT = '#52c41a'; // Green for light theme
@@ -229,12 +229,11 @@ export const WALKING_COLOR = HIKING_COLOR;
 export const SWIMMING_COLOR = 'rgb(255,51,51)';
 
 // map tiles vendor, maptiler or mapbox or stadiamaps or amap or mapcn
-// switched to amap (高德地图) — works reliably in China
-export const MAP_TILE_VENDOR = 'amap';
+// 'mapcn' uses Carto dark-matter (free, no token) — similar visual to Mapbox dark
+export const MAP_TILE_VENDOR = 'mapcn';
 
 // map tiles style name, see MAP_TILE_STYLES for more details
-// for amap vendor: 'dark' (darkened standard map) or 'standard' (light) or 'satellite' (imagery)
-export const MAP_TILE_STYLE = 'dark';
+export const MAP_TILE_STYLE = 'dark-matter';
 
 // For non-amap vendors (mapcn, maptiler, stadiamaps, mapbox):
 export const MAP_TILE_STYLE_LIGHT = 'osm-bright';
