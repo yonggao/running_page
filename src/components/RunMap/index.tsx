@@ -69,8 +69,8 @@ const RunMap = ({
   const { countries, provinces } = useActivities();
   const mapRef = useRef<MapRef>(null);
   const [lights, setLights] = useState(PRIVACY_MODE ? false : LIGHTS_ON);
-  // layers that should remain visible when lights are off
-  const keepWhenLightsOff = ['runs2', 'animated-run', 'province', 'countries'];
+  // Our own data layer IDs — always kept visible regardless of lights setting
+  const dataLayerIds = ['runs2', 'animated-run', 'province', 'countries'];
   const [mapGeoData, setMapGeoData] =
     useState<FeatureCollection<RPGeometry> | null>(null);
   const [isLoadingMapData, setIsLoadingMapData] = useState(false);
@@ -203,17 +203,25 @@ const RunMap = ({
   }, [countries]);
 
   /**
-   * Toggle visibility of map layers based on lights setting
-   * @param map - The Mapbox map instance
-   * @param lights - Whether lights are on or off
+   * Toggle visibility of base map layers based on lights setting.
+   * Our own data layers (runs, provinces, countries) are always kept visible.
+   * The 'background' layer type is also kept to avoid a fully transparent canvas.
    */
   function switchLayerVisibility(map: MapInstance, lights: boolean) {
     const styleJson = map.getStyle();
-    styleJson.layers.forEach((it: { id: string }) => {
-      if (!keepWhenLightsOff.includes(it.id)) {
-        if (lights) map.setLayoutProperty(it.id, 'visibility', 'visible');
-        else map.setLayoutProperty(it.id, 'visibility', 'none');
+    styleJson.layers.forEach((it: { id: string; type?: string }) => {
+      // Always keep our data layers visible
+      if (dataLayerIds.includes(it.id)) {
+        map.setLayoutProperty(it.id, 'visibility', 'visible');
+        return;
       }
+      // Keep background layer to avoid transparent canvas
+      if (it.type === 'background') {
+        return;
+      }
+      // Toggle base map layers
+      if (lights) map.setLayoutProperty(it.id, 'visibility', 'visible');
+      else map.setLayoutProperty(it.id, 'visibility', 'none');
     });
   }
 

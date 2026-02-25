@@ -229,19 +229,19 @@ export const WALKING_COLOR = HIKING_COLOR;
 export const SWIMMING_COLOR = 'rgb(255,51,51)';
 
 // map tiles vendor, maptiler or mapbox or stadiamaps or amap or mapcn
-export const MAP_TILE_VENDOR = 'amap';
+// 'mapcn' uses Carto dark-matter — similar to Mapbox dark, free, no token
+export const MAP_TILE_VENDOR = 'mapcn';
 
 // map tiles style name, see MAP_TILE_STYLES for more details
-export const MAP_TILE_STYLE = 'dark';
+export const MAP_TILE_STYLE = 'dark-matter';
 
 // For non-amap vendors (mapcn, maptiler, stadiamaps, mapbox):
 export const MAP_TILE_STYLE_LIGHT = 'osm-bright';
 export const MAP_TILE_STYLE_DARK = 'dark-matter';
 
-// AMap (高德地图) API Key — read from env var, falls back to hardcoded for local dev
+// Map tile access token — mapcn (Carto) does not require a token
 export const MAP_TILE_ACCESS_TOKEN =
-  (import.meta.env.VITE_AMAP_KEY as string) ||
-  '577048de3ed8b0b102ffe3eca8bb402a';
+  (import.meta.env.VITE_AMAP_KEY as string) || '';
 
 // AMap security key — for AMap JS API v2 compliance
 // Vercel env var: VITE_AMAP_SECURITY_KEY
