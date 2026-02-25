@@ -23,6 +23,7 @@ import {
   MAP_TILE_STYLE,
   MAP_TILE_VENDOR,
   MAP_TILE_ACCESS_TOKEN,
+  AMAP_SECURITY_KEY,
 } from '@/utils/const';
 import {
   Coordinate,
@@ -74,22 +75,31 @@ const RunMap = ({
       }
     });
   }
+  // Inject AMap security key for JS API v2 compliance (no-op if already set)
+  if (MAP_TILE_VENDOR === 'amap' && typeof window !== 'undefined') {
+    (window as any)._AMapSecurityConfig = {
+      securityJsCode: AMAP_SECURITY_KEY,
+    };
+  }
+
   const mapRefCallback = useCallback(
     (ref: MapRef) => {
       if (ref !== null) {
         const map = ref.getMap();
-        if (map && IS_CHINESE) {
+        // MapboxLanguage only works with vector tile styles — skip for AMap raster tiles
+        if (map && IS_CHINESE && MAP_TILE_VENDOR !== 'amap') {
           map.addControl(new MapboxLanguage({ defaultLanguage: 'zh-Hans' }));
         }
         // all style resources have been downloaded
         // and the first visually complete rendering of the base style has occurred.
-        // it's odd. when use style other than mapbox, the style.load event is not triggered.Add commentMore actions
+        // it's odd. when use style other than mapbox, the style.load event is not triggered.
         // so I use data event instead of style.load event and make sure we handle it only once.
         map.on('data', (event) => {
           if (event.dataType !== 'style' || mapRef.current) {
             return;
           }
-          if (!ROAD_LABEL_DISPLAY) {
+          // ROAD_LABEL_DISPLAY only applies to vector tile styles with named symbol layers
+          if (!ROAD_LABEL_DISPLAY && MAP_TILE_VENDOR !== 'amap') {
             const layers = map.getStyle().layers;
             const labelLayerNames = layers
               .filter(

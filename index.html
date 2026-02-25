@@ -2,6 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- AMap (高德地图) security key for JS API v2 compliance -->
+    <!-- Key is set early so any AMap SDK loaded later picks it up automatically -->
+    <script>
+      window._AMapSecurityConfig = {
+        securityJsCode: 'bc08db8912081527262d1964907b84f4',
+      };
+    </script>
     <script>
       (function () {
         const basePath = '%BASE_URL%';
