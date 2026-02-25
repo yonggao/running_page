@@ -30,3 +30,6 @@ route.png
 route.svg
 
 .env
+.vercel
+.env*.local
+package-lock.json
