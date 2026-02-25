@@ -239,11 +239,10 @@ export const MAP_TILE_STYLE = 'dark-matter';
 export const MAP_TILE_STYLE_LIGHT = 'osm-bright';
 export const MAP_TILE_STYLE_DARK = 'dark-matter';
 
-// AMap (高德地图) API Key — read from env var, falls back to hardcoded for local dev
-// Vercel env var: VITE_AMAP_KEY
+// Map tile access token — mapcn (Carto) does not require a token
+// For maptiler/stadiamaps/mapbox, set the appropriate env var
 export const MAP_TILE_ACCESS_TOKEN =
-  (import.meta.env.VITE_AMAP_KEY as string) ||
-  '577048de3ed8b0b102ffe3eca8bb402a';
+  (import.meta.env.VITE_AMAP_KEY as string) || '';
 
 // AMap security key — for AMap JS API v2 compliance
 // Vercel env var: VITE_AMAP_SECURITY_KEY
