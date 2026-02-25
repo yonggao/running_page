@@ -1,4 +1,3 @@
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import React, {
   useRef,
   useCallback,
@@ -12,13 +11,12 @@ import Map, {
   FullscreenControl,
   NavigationControl,
   MapRef,
-} from 'react-map-gl';
+} from 'react-map-gl/maplibre';
 import { MapInstance } from 'react-map-gl/src/types/lib';
 import useActivities from '@/hooks/useActivities';
 import {
   IS_CHINESE,
   ROAD_LABEL_DISPLAY,
-  MAPBOX_TOKEN,
   PROVINCE_FILL_COLOR,
   COUNTRY_FILL_COLOR,
   USE_DASH_LINE,
@@ -44,6 +42,7 @@ import RunMapButtons from './RunMapButtons';
 import styles from './style.module.css';
 import { FeatureCollection } from 'geojson';
 import { RPGeometry } from '@/static/run_countries';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import './mapbox.css';
 import LightsControl from '@/components/RunMap/LightsControl';
 import { useMapTheme, useThemeChangeCounter } from '@/hooks/useTheme';
@@ -94,11 +93,7 @@ const RunMap = ({
     [currentMapTheme]
   );
 
-  // Mapbox GL JS requires a token even when using other vendors
-  // Always use the MAPBOX_TOKEN from const.ts (user may have set their own token)
-  const mapboxAccessToken = useMemo(() => {
-    return MAPBOX_TOKEN;
-  }, []);
+  // maplibre-gl does not require a token
 
   // Update map when theme changes
   useEffect(() => {
@@ -248,10 +243,7 @@ const RunMap = ({
     (ref: MapRef) => {
       if (ref !== null) {
         const map = ref.getMap();
-        // MapboxLanguage only works with vector tile styles — skip for AMap raster tiles
-        if (map && IS_CHINESE && MAP_TILE_VENDOR !== 'amap') {
-          map.addControl(new MapboxLanguage({ defaultLanguage: 'zh-Hans' }));
-        }
+        // MapboxLanguage is mapbox-gl specific — not needed with maplibre-gl + amap tiles
         // all style resources have been downloaded
         // and the first visually complete rendering of the base style has occurred.
         // it's odd. when use style other than mapbox, the style.load event is not triggered.
@@ -438,7 +430,6 @@ const RunMap = ({
       mapStyle={mapStyle}
       ref={mapRefCallback}
       cooperativeGestures={isTouchDevice()}
-      mapboxAccessToken={mapboxAccessToken}
     >
       {mapError && (
         <div className={styles.mapErrorNotification}>
