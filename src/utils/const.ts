@@ -178,7 +178,8 @@ export const MAP_TILE_STYLE = 'dark';
 // AMap (高德地图) API Key — read from env var, falls back to hardcoded for local dev
 // Vercel env var: VITE_AMAP_KEY
 export const MAP_TILE_ACCESS_TOKEN =
-  (import.meta.env.VITE_AMAP_KEY as string) || '577048de3ed8b0b102ffe3eca8bb402a';
+  (import.meta.env.VITE_AMAP_KEY as string) ||
+  '577048de3ed8b0b102ffe3eca8bb402a';
 
 // AMap security key — for AMap JS API v2 compliance
 // Vercel env var: VITE_AMAP_SECURITY_KEY

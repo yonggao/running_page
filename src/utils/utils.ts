@@ -453,12 +453,29 @@ const buildAmapStyle = (styleName: string) => {
     return {
       version: 8,
       sources: {
-        'amap-satellite': { type: 'raster', tiles: satelliteTiles, tileSize: 256, attribution: '© 高德地图' },
+        'amap-satellite': {
+          type: 'raster',
+          tiles: satelliteTiles,
+          tileSize: 256,
+          attribution: '© 高德地图',
+        },
         'amap-labels': { type: 'raster', tiles: labelTiles, tileSize: 256 },
       },
       layers: [
-        { id: 'amap-satellite-layer', type: 'raster', source: 'amap-satellite', minzoom: 0, maxzoom: 22 },
-        { id: 'amap-label-layer', type: 'raster', source: 'amap-labels', minzoom: 0, maxzoom: 22 },
+        {
+          id: 'amap-satellite-layer',
+          type: 'raster',
+          source: 'amap-satellite',
+          minzoom: 0,
+          maxzoom: 22,
+        },
+        {
+          id: 'amap-label-layer',
+          type: 'raster',
+          source: 'amap-labels',
+          minzoom: 0,
+          maxzoom: 22,
+        },
       ],
     };
   }
@@ -466,7 +483,12 @@ const buildAmapStyle = (styleName: string) => {
   return {
     version: 8,
     sources: {
-      'amap-tiles': { type: 'raster', tiles: roadTiles, tileSize: 256, attribution: '© 高德地图' },
+      'amap-tiles': {
+        type: 'raster',
+        tiles: roadTiles,
+        tileSize: 256,
+        attribution: '© 高德地图',
+      },
     },
     layers: [
       {
