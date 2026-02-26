@@ -2,20 +2,31 @@ import Stat from '@/components/Stat';
 import useActivities from '@/hooks/useActivities';
 import { DIST_UNIT, M_TO_DIST } from '@/utils/utils';
 
-// only support China for now
-const CitiesStat = ({ onClick }: { onClick: (_city: string) => void }) => {
-  const { cities } = useActivities();
+const PREFECTURE_ZOOM_THRESHOLD = 8;
 
-  const citiesArr = Object.entries(cities);
-  citiesArr.sort((a, b) => b[1] - a[1]);
+// only support China for now
+const CitiesStat = ({
+  onClick,
+  zoom,
+}: {
+  onClick: (_city: string) => void;
+  zoom: number;
+}) => {
+  const { cities, prefectureCities } = useActivities();
+
+  const usePrefecture = zoom <= PREFECTURE_ZOOM_THRESHOLD;
+  const data = usePrefecture ? prefectureCities : cities;
+
+  const citiesArr = Object.entries(data);
+  citiesArr.sort((a, b) => b[1].distance - a[1].distance);
   return (
     <div className="cursor-pointer">
       <section>
-        {citiesArr.map(([city, distance]) => (
+        {citiesArr.map(([city, stats]) => (
           <Stat
             key={city}
             value={city}
-            description={` ${(distance / M_TO_DIST).toFixed(0)} ${DIST_UNIT}`}
+            description={` ${stats.count}次 ${(stats.distance / M_TO_DIST).toFixed(0)} ${DIST_UNIT}`}
             citySize={3}
             onClick={() => onClick(city)}
           />
