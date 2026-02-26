@@ -17,7 +17,10 @@ const LocationSummary = () => {
           <Stat value={provinces.length} description=" 个省份" />
         ) : null}
         {prefectureCities ? (
-          <Stat value={Object.keys(prefectureCities).length} description=" 个城市" />
+          <Stat
+            value={Object.keys(prefectureCities).length}
+            description=" 个城市"
+          />
         ) : null}
       </section>
       <hr />
