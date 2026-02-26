@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { locationForRun, titleForRun } from '@/utils/utils';
 import activities from '@/static/activities.json';
 import { COUNTRY_STANDARDIZATION } from '@/static/city';
+import { MUNICIPALITY_CITIES_ARR } from '@/utils/const';
 
 const standardizeCountryName = (country: string): string => {
   for (const [pattern, standardName] of COUNTRY_STANDARDIZATION) {
@@ -12,9 +13,15 @@ const standardizeCountryName = (country: string): string => {
   return country;
 };
 
+export interface CityStats {
+  distance: number;
+  count: number;
+}
+
 const useActivities = () => {
   const processedData = useMemo(() => {
-    const cities: Record<string, number> = {};
+    const cities: Record<string, CityStats> = {};
+    const prefectureCities: Record<string, CityStats> = {};
     const runPeriod: Record<string, number> = {};
     const provinces: Set<string> = new Set();
     const countries: Set<string> = new Set();
@@ -33,9 +40,23 @@ const useActivities = () => {
       const { city, province, country } = location;
       // drop only one char city
       if (city.length > 1) {
-        cities[city] = cities[city]
-          ? cities[city] + run.distance
-          : run.distance;
+        if (!cities[city]) {
+          cities[city] = { distance: 0, count: 0 };
+        }
+        cities[city].distance += run.distance;
+        cities[city].count += 1;
+      }
+      // Prefecture-level aggregation: for municipalities, use province (e.g. 上海市)
+      // instead of district (e.g. 浦东新区)
+      const prefectureKey = MUNICIPALITY_CITIES_ARR.includes(province)
+        ? province
+        : city;
+      if (prefectureKey && prefectureKey.length > 1) {
+        if (!prefectureCities[prefectureKey]) {
+          prefectureCities[prefectureKey] = { distance: 0, count: 0 };
+        }
+        prefectureCities[prefectureKey].distance += run.distance;
+        prefectureCities[prefectureKey].count += 1;
       }
       if (province) provinces.add(province);
       if (country) countries.add(standardizeCountryName(country));
@@ -52,6 +73,7 @@ const useActivities = () => {
       countries: [...countries],
       provinces: [...provinces],
       cities,
+      prefectureCities,
       runPeriod,
       thisYear,
     };

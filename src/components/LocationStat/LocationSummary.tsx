@@ -3,7 +3,7 @@ import useActivities from '@/hooks/useActivities';
 
 // only support China for now
 const LocationSummary = () => {
-  const { years, countries, provinces, cities } = useActivities();
+  const { years, countries, provinces, prefectureCities } = useActivities();
   return (
     <div className="cursor-pointer">
       <section>
@@ -16,8 +16,8 @@ const LocationSummary = () => {
         {provinces ? (
           <Stat value={provinces.length} description=" 个省份" />
         ) : null}
-        {cities ? (
-          <Stat value={Object.keys(cities).length} description=" 个城市" />
+        {prefectureCities ? (
+          <Stat value={Object.keys(prefectureCities).length} description=" 个城市" />
         ) : null}
       </section>
       <hr />
